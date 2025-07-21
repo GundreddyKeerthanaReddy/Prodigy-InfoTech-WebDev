@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Colorful Interactive Nav</title>
+  <style>
+    /* RESET */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      z-index: 1000;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .navbar.scrolled {
+      background: linear-gradient(135deg, #ff6a00, #ee0979);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: white;
+      font-size: 1.1rem;
+      position: relative;
+      padding: 5px 10px;
+      transition: 0.3s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #ffd700;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background: #ffd700;
+      transition: width 0.3s;
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a.active::after {
+      width: 100%;
+    }
+
+    /* MOBILE MENU */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .menu-toggle div {
+      width: 25px;
+      height: 3px;
+      background-color: white;
+      margin: 4px 0;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        position: absolute;
+        top: 60px;
+        right: 30px;
+        background-color: #333;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+        display: none;
+      }
+
+      .nav-links.show {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+    }
+
+    /* CONTENT SECTIONS */
+    section {
+      padding: 100px 20px;
+      min-height: 100vh;
+    }
+
+    #home { background: #f4f4f4; }
+    #about { background: #ffe0e0; }
+    #services { background: #e0ffe0; }
+    #contact { background: #e0f0ff; }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+    }
+
+    p {
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="logo">MySite</div>
+    <div class="menu-toggle" id="menu-toggle">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#home" class="nav-item active">Home</a></li>
+      <li><a href="#about" class="nav-item">About</a></li>
+      <li><a href="#services" class="nav-item">Services</a></li>
+      <li><a href="#contact" class="nav-item">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- PAGE SECTIONS -->
+  <section id="home">
+    <h1>Welcome</h1>
+    <p>This is a colorful interactive fixed navigation menu with scroll effects, hover animations, and mobile responsiveness.</p>
+  </section>
+
+  <section id="about">
+    <h1>About Us</h1>
+    <p>We’re a team of creative developers building interactive, colorful experiences for the web.</p>
+  </section>
+
+  <section id="services">
+    <h1>Services</h1>
+    <p>We offer web development, UI/UX design, branding, and much more to bring your ideas to life.</p>
+  </section>
+
+  <section id="contact">
+    <h1>Contact</h1>
+    <p>Want to work with us? Reach out anytime and let’s build something great together!</p>
+  </section>
+
+  <!-- SCRIPT -->
+  <script>
+    // Change navbar on scroll
+    window.addEventListener("scroll", () => {
+      const navbar = document.getElementById("navbar");
+      navbar.classList.toggle("scrolled", window.scrollY > 50);
+    });
+
+    // Highlight active menu item
+    const sections = document.querySelectorAll("section");
+    const navItems = document.querySelectorAll(".nav-item");
+
+    window.addEventListener("scroll", () => {
+      let current = "";
+      sections.forEach((section) => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= sectionTop - 80) {
+          current = section.getAttribute("id");
+        }
+      });
+
+      navItems.forEach((link) => {
+        link.classList.remove("active");
+        if (link.getAttribute("href") === "#" + current) {
+          link.classList.add("active");
+        }
+      });
+    });
+
+    // Toggle mobile nav
+    const menuToggle = document.getElementById("menu-toggle");
+    const navLinks = document.getElementById("nav-links");
+
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+    });
+  </script>
+</body>
+</html>

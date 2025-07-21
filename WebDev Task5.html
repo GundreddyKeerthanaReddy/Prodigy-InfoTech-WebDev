@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Colorful Weather App</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: white;
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .search-bar {
+      margin: 20px 0;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 250px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 10px 16px;
+      margin-left: 8px;
+      border: none;
+      background: #ff4081;
+      color: white;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #e91e63;
+    }
+
+    .weather-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .weather-icon {
+      width: 100px;
+    }
+
+    .temp {
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+
+    .info {
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+
+    .error {
+      color: #ffcccb;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 480px) {
+      input[type="text"] {
+        width: 80%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌤 Weather App</h1>
+
+  <div class="search-bar">
+    <input type="text" id="cityInput" placeholder="Enter city name..." />
+    <button onclick="getWeatherByCity()">Search</button>
+    <button onclick="getWeatherByLocation()">📍</button>
+  </div>
+
+  <div id="weatherContainer" class="weather-card" style="display: none;">
+    <h2 id="cityName">City Name</h2>
+    <img id="weatherIcon" class="weather-icon" src="" alt="Weather icon" />
+    <div class="temp" id="temperature">--°C</div>
+    <div class="info" id="description">Description</div>
+    <div class="info" id="humidity">Humidity: --%</div>
+    <div class="info" id="wind">Wind Speed: -- m/s</div>
+  </div>
+
+  <div class="error" id="errorMsg"></div>
+
+  <script>
+    const API_KEY = "YOUR_API_KEY_HERE"; // Replace this with your OpenWeatherMap API key
+
+    function getWeatherByCity() {
+      const city = document.getElementById("cityInput").value.trim();
+      if (city) {
+        fetchWeather(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${API_KEY}`);
+      }
+    }
+
+    function getWeatherByLocation() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+          fetchWeather(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${API_KEY}`);
+        }, () => {
+          showError("Location access denied.");
+        });
+      } else {
+        showError("Geolocation not supported by your browser.");
+      }
+    }
+
+    function fetchWeather(url) {
+      document.getElementById("errorMsg").innerText = "";
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("City not found.");
+          }
+          return response.json();
+        })
+        .then(data => updateUI(data))
+        .catch(error => showError(error.message));
+    }
+
+    function updateUI(data) {
+      document.getElementById("weatherContainer").style.display = "block";
+      document.getElementById("cityName").innerText = `${data.name}, ${data.sys.country}`;
+      document.getElementById("temperature").innerText = `${Math.round(data.main.temp)}°C`;
+      document.getElementById("description").innerText = `Condition: ${data.weather[0].description}`;
+      document.getElementById("humidity").innerText = `Humidity: ${data.main.humidity}%`;
+      document.getElementById("wind").innerText = `Wind Speed: ${data.wind.speed} m/s`;
+      document.getElementById("weatherIcon").src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    }
+
+    function showError(message) {
+      document.getElementById("weatherContainer").style.display = "none";
+      document.getElementById("errorMsg").innerText = message;
+    }
+
+    // Auto-fetch based on location on load
+    window.onload = getWeatherByLocation;
+  </script>
+</body>
+</html>
